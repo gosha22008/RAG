@@ -1,0 +1,64 @@
+# version: '3.9'
+
+services:
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      # Локальная папка для базы данных Qdrant
+      - ./.qdrant_data:/qdrant/storage
+    restart: unless-stopped
+
+  tei:
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-ipex-latest
+    container_name: tei
+    ports:
+      - "8081:80"
+    volumes:
+      - ./.hf_cache/tei:/data
+    environment:
+      - OMP_NUM_THREADS=16
+      - MKL_NUM_THREADS=16
+      - KMP_AFFINITY=granularity=fine,compact,1,0
+    command: >
+      --model-id Qwen/Qwen3-Embedding-0.6B
+      --dtype bfloat16
+      --max-batch-tokens 8192
+      --max-client-batch-size 64
+      --auto-truncate
+    cpuset: "0-15"
+    restart: unless-stopped
+
+  vllm:
+    image: vllm/vllm-openai:latest
+    container_name: vllm
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./.hf_cache:/root/.cache/huggingface
+    # environment:
+      # - CUDA_LAUNCH_BLOCKING=1 
+      # - NVIDIA_VISIBLE_DEVICES=all
+      # - HF_HUB_ENABLE_HF_TRANSFER=1
+    command: >
+      Qwen/Qwen3-4B-Instruct-2507-FP8
+      --quantization fp8
+      --enforce-eager
+      --gpu-memory-utilization 0.85
+      --max-model-len 16384
+      --max-num-batched-tokens 16384
+      --max-num-seqs 32
+      --kv-cache-dtype fp8
+      --served-model-name qwen3-4b
+      --trust-remote-code
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    # restart: unless-stopped

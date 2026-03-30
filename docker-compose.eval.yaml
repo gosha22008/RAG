@@ -1,0 +1,35 @@
+services:
+  vllm14b:
+    image: vllm/vllm-openai:latest
+    container_name: vllm14b
+    ports:
+      - "8000:8000"
+    volumes:
+  # Локальная папка для всех весов моделей HuggingFace
+      - ./.hf_cache/eval:/root/.cache/huggingface
+    # environment:
+    #   - VLLM_USE_V1=0               # Отключаем глючный V1 Engine
+    #   - VLLM_ATTENTION_BACKEND=TRITON # Уходим с FlashInfer на стабильный Triton
+    #   - NVIDIA_VISIBLE_DEVICES=0
+    #   - HF_HUB_ENABLE_HF_TRANSFER=1
+      # - PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+    command:                                      # ← модель идёт первой (positional argument)
+      froogai/Qwen3-14B-AWQ
+      --quantization awq_marlin
+      --enforce-eager
+      --gpu-memory-utilization 0.87
+      --max-model-len 8192
+      --max-num-batched-tokens 8192
+      --max-num-seqs 32
+      --kv-cache-dtype fp8
+      --served-model-name qwen2.5-14b
+      --trust-remote-code
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    # restart: unless-stopped
+    # shm_size: 8gb
