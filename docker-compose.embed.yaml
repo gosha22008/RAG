@@ -1,0 +1,23 @@
+services:
+  vllm_embed:
+    image: vllm/vllm-openai:latest
+    container_name: vllm_embed
+    ports:
+      - "8081:8000"
+    volumes:
+      - ./.hf_cache/embed:/root/.cache/huggingface
+    command: >
+      Qwen/Qwen3-Embedding-0.6B
+      --served-model-name qwen3-embed
+      --max-model-len 16384
+      --max-num-batched-tokens 16384
+      --max-num-seqs 64
+      --gpu-memory-utilization 0.7
+      --trust-remote-code
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
