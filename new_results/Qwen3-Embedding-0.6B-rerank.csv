@@ -1,0 +1,6 @@
+precision@k,recall@k,f1@k,hit_rate@k,mrr@k,experiment,collection,k,chunk_size,chunk_overlap,splitter_type,retrieval_mode,rerank
+0.8288,0.8288,0.8288,0.8288,0.8288,Qwen3-Embedding-0.6B-rerank,wb_Qwen3-Embedding-0.6B-rerank,1,500,200,hierarchical,dense,True
+0.8243,0.9099,0.8529,0.9099,0.8694,Qwen3-Embedding-0.6B-rerank,wb_Qwen3-Embedding-0.6B-rerank,2,500,200,hierarchical,dense,True
+0.7643,0.9369,0.8221,0.9369,0.8784,Qwen3-Embedding-0.6B-rerank,wb_Qwen3-Embedding-0.6B-rerank,3,500,200,hierarchical,dense,True
+0.6351,0.9595,0.7361,0.9595,0.884,Qwen3-Embedding-0.6B-rerank,wb_Qwen3-Embedding-0.6B-rerank,5,500,200,hierarchical,dense,True
+0.4396,0.9595,0.5754,0.9595,0.884,Qwen3-Embedding-0.6B-rerank,wb_Qwen3-Embedding-0.6B-rerank,10,500,200,hierarchical,dense,True

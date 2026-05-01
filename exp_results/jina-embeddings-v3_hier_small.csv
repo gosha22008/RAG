@@ -1,0 +1,6 @@
+precision@k,recall@k,f1@k,hit_rate@k,mrr@k,experiment,collection,k,chunk_size,chunk_overlap,splitter_type
+0.7072,0.7072,0.7072,0.7072,0.7072,jina-embeddings-v3_hier_small,wb_jina-embeddings-v3_hier_small,1,500,200,hierarchical
+0.6802,0.8378,0.7327,0.8378,0.7725,jina-embeddings-v3_hier_small,wb_jina-embeddings-v3_hier_small,2,500,200,hierarchical
+0.6396,0.8874,0.7158,0.8874,0.789,jina-embeddings-v3_hier_small,wb_jina-embeddings-v3_hier_small,3,500,200,hierarchical
+0.5288,0.9144,0.6415,0.9144,0.7953,jina-embeddings-v3_hier_small,wb_jina-embeddings-v3_hier_small,5,500,200,hierarchical
+0.414,0.9459,0.5465,0.9459,0.799,jina-embeddings-v3_hier_small,wb_jina-embeddings-v3_hier_small,10,500,200,hierarchical

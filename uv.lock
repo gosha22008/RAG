@@ -282,6 +282,18 @@ wheels = [
 ]
 
 [[package]]
+name = "bm25s"
+version = "0.3.6"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/61/3b/cc173de8bbfb21362cd343a6b3077c95e70b9fdaed50f792df4fd70e8c4f/bm25s-0.3.6.tar.gz", hash = "sha256:1ce8549342d2ca9487b82c5e8ac7ac180ac7753d9912e9c66288f670ba3139e4", size = 77821, upload-time = "2026-04-25T03:27:56.803Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e4/12/33fb846b01ce073ffbd766f5f59fc2fcd023eb1dc2000744a7839bb9dbe4/bm25s-0.3.6-py3-none-any.whl", hash = "sha256:11b1cbc9bc7ca5e4b5806639f309a08e746cdfe376dc9177aa3c9d518f78814e", size = 72848, upload-time = "2026-04-25T03:27:55.174Z" },
+]
+
+[[package]]
 name = "celery"
 version = "5.6.2"
 source = { registry = "https://pypi.org/simple" }
@@ -2078,6 +2090,18 @@ wheels = [
 ]
 
 [[package]]
+name = "llama-index-embeddings-openai-like"
+version = "0.3.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "llama-index-embeddings-openai" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/1d/42/eaf4c1f82f43c54d35dfa1dcadd1efe1f56e41db4b0d9edc953616902a58/llama_index_embeddings_openai_like-0.3.0.tar.gz", hash = "sha256:f07e30492e2dee082b13e1155e43381f88af4ce96410d9f631b06995d82fee7e", size = 3854, upload-time = "2026-03-12T20:21:25.37Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/fe/95/bece3b6a84c18ec46a50e56e4b2d92d349995a7a262b34fc7e60ee87531f/llama_index_embeddings_openai_like-0.3.0-py3-none-any.whl", hash = "sha256:ac9f922c5578600cc477fc552ec20b5bff3e72012619252684a785813d6a2094", size = 3631, upload-time = "2026-03-12T20:21:24.324Z" },
+]
+
+[[package]]
 name = "llama-index-embeddings-text-embeddings-inference"
 version = "0.5.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2186,6 +2210,20 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/b3/77/5bfaab20e6ec8428dbf2352e18be550c957602723d69383908176b5686cd/llama_index_readers_llama_parse-0.5.1.tar.gz", hash = "sha256:2b78b73faa933e30e6c69df351e4e9f36dfe2ae142e2ab3969ddd2ac48930e37", size = 3858, upload-time = "2025-09-08T20:41:29.201Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/68/81/52410c7245dcbf1a54756a9ce3892cdd167ec0b884d696de1304ca3f452e/llama_index_readers_llama_parse-0.5.1-py3-none-any.whl", hash = "sha256:0d41450ed29b0c49c024e206ef6c8e662b1854e77a1c5faefed3b958be54f880", size = 3203, upload-time = "2025-09-08T20:41:28.438Z" },
+]
+
+[[package]]
+name = "llama-index-retrievers-bm25"
+version = "0.7.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "bm25s" },
+    { name = "llama-index-core" },
+    { name = "pystemmer" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b5/72/c51933e684e5480c8c9560536d3fc8b68919ab3c857f556bd5a332293b21/llama_index_retrievers_bm25-0.7.1.tar.gz", hash = "sha256:65bff95c5c1354854394209406d2d342ff5e62983ff2818fd2b85d5bed70bed0", size = 5532, upload-time = "2026-03-13T15:06:25.727Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c1/c3/4a8d46d73829a528c552c86c0ea8b92f06df40e5fd338c0c7c6ffe8804e6/llama_index_retrievers_bm25-0.7.1-py3-none-any.whl", hash = "sha256:6feb1882fb43608bfcb8ea6466b5fabda78b097c7b7cbe28a4f2b3cc5a3705ee", size = 5061, upload-time = "2026-03-13T15:06:24.772Z" },
 ]
 
 [[package]]
@@ -3652,6 +3690,30 @@ wheels = [
 ]
 
 [[package]]
+name = "pystemmer"
+version = "2.2.0.3"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/26/12/0378ba4391a4674067ae9db0e025ec998f6ca74caddd22fbdc59dc19aafb/pystemmer-2.2.0.3.tar.gz", hash = "sha256:9ac74c8d0f3358dbb050f64cddbb8d55021d831d92305d7c20780ea8d6c0020e", size = 303860, upload-time = "2024-10-10T00:36:25.921Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/81/7c/e09c0ac1aa4571ded5f46c14aed5d4828b61392611ed1c59a8faf1cae98a/PyStemmer-2.2.0.3-cp312-cp312-macosx_10_13_x86_64.whl", hash = "sha256:c30c44241065beb9432273874f199fc109473338d9f2c921a3387fd534fd94a7", size = 214916, upload-time = "2024-10-10T00:56:41.803Z" },
+    { url = "https://files.pythonhosted.org/packages/e5/dc/b30dd228af740b1ffe18e4cfb48c22aa8481ce1e79405cac31086fb849bd/PyStemmer-2.2.0.3-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:a6adf0b86b6be85f0cf80b2b255b2b0179782b4a3f39c0a6c5b3dd07af5f95eb", size = 220418, upload-time = "2024-10-10T00:56:43.354Z" },
+    { url = "https://files.pythonhosted.org/packages/f7/68/eb9f06b2f04f408ed748d6e71fb2f5ae92deba0eea07b6e374268d53cb49/PyStemmer-2.2.0.3-cp312-cp312-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:2d42b41082553fa23a4ce191860fd7caffdeaf8507e84db630a97ed154bd2320", size = 644074, upload-time = "2024-10-10T00:56:45.45Z" },
+    { url = "https://files.pythonhosted.org/packages/a6/9f/e95eeccf29ad1e1dbf4a14b76e2fa5b6698ba06f10634b097b32258839b0/PyStemmer-2.2.0.3-cp312-cp312-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ec763ee2994402c534bf898ff318edd158c32071c3ffbdcd7ae7b7c884250471", size = 683255, upload-time = "2024-10-10T00:56:47.314Z" },
+    { url = "https://files.pythonhosted.org/packages/3b/4b/8b077958eb760ac647d2362f8bd1ae99097fa351edc6333fde0dee51f912/PyStemmer-2.2.0.3-cp312-cp312-musllinux_1_2_i686.whl", hash = "sha256:264f09d5f70b09c845a6f0d0d4973de674056fd50452cb9383ffae8fc0967f1d", size = 649228, upload-time = "2024-10-10T00:56:50.101Z" },
+    { url = "https://files.pythonhosted.org/packages/7f/13/3d57038439293d93e40af89b48bc06c714f8cd8c5d22a9e6d0870f49ea1c/PyStemmer-2.2.0.3-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:5634f38a781b9a893550c23380af080ca5291d19c2bcb1753a34022d1d0de7cb", size = 682987, upload-time = "2024-10-10T00:56:53.094Z" },
+    { url = "https://files.pythonhosted.org/packages/9a/95/f04305ab6fc6312b4727b725ab983342237c7bb95d21d98bd768146dd9e8/PyStemmer-2.2.0.3-cp312-cp312-win32.whl", hash = "sha256:186c2e90ea2c3d0fab21f10f17b48fb7d716cba5f49b68f7f0fe539db4ff0499", size = 141412, upload-time = "2024-10-10T00:56:54.64Z" },
+    { url = "https://files.pythonhosted.org/packages/0f/73/861a71009f20331cd22aff1c37b9c39ef3af4d57d6816df79d51b3fca533/PyStemmer-2.2.0.3-cp312-cp312-win_amd64.whl", hash = "sha256:320c1da333f5f8571e2b313c9fa6c0a7a79d8a00a2ad0bf29932d931d236d7e8", size = 185395, upload-time = "2024-10-10T00:56:56.177Z" },
+    { url = "https://files.pythonhosted.org/packages/c0/eb/b39bef7c8ec2ad9e198b956104741c1e7a94f0003875ef0a5a32ae20443f/PyStemmer-2.2.0.3-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:806530b6a1542efd6453fc5f5b5aa348d52c337d0eb1dfc54a5ff6a8733d7ccc", size = 214375, upload-time = "2024-10-10T00:56:57.681Z" },
+    { url = "https://files.pythonhosted.org/packages/ad/db/93f0fd99c99cfdfb68a6d671324ceb3e9c0cf2040f47d917a42e615faf03/PyStemmer-2.2.0.3-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:d3fe53911811ec554b13a2c3b0ceb1a23c6fbed3d510ea0d8544a4e0b861e4d6", size = 219992, upload-time = "2024-10-10T00:56:59.897Z" },
+    { url = "https://files.pythonhosted.org/packages/5c/52/cb3ad58e8ce701c97a38f7828d899cfd12f0b7b06c49a4d67a17298641eb/PyStemmer-2.2.0.3-cp313-cp313-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:cf26cc1071685597b54b78dd2f62080c58f9be1cb9b4f9c92f94d5c0b5e5e65d", size = 638201, upload-time = "2024-10-10T00:57:02.474Z" },
+    { url = "https://files.pythonhosted.org/packages/c6/e7/d22c50ac8e76c2878cc1056010d0db26b7e5a7936262320c62a6dcdfdbc9/PyStemmer-2.2.0.3-cp313-cp313-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f3d229a8451e5e909c3f41e19c2f1c9a531d3281954a8cbc06163a458adcc465", size = 678416, upload-time = "2024-10-10T00:57:04.845Z" },
+    { url = "https://files.pythonhosted.org/packages/90/bd/cd603a89316769c4ae3a4d2271c9c9707b26939517bbe2f780c4f171ade3/PyStemmer-2.2.0.3-cp313-cp313-musllinux_1_2_i686.whl", hash = "sha256:f44e27fbdeffd46b513ed80d5dab0c7e0e09fb1cd85e8dbf8041b6e4a2d55bee", size = 643274, upload-time = "2024-10-10T00:57:06.675Z" },
+    { url = "https://files.pythonhosted.org/packages/0a/0e/7fad0a408def5738ce1deffc6242bd8086f76fae1f7a5a4c36e31ab528d0/PyStemmer-2.2.0.3-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:4acd71d4359399e41543198caf150e7f398a8d52e371a0c89ba63a90ec3e0909", size = 677487, upload-time = "2024-10-10T00:57:08.474Z" },
+    { url = "https://files.pythonhosted.org/packages/11/79/3f429bd0c97fe95d62aee32216dfbe3db9a59c3a8a3ff185bb1927e45658/PyStemmer-2.2.0.3-cp313-cp313-win32.whl", hash = "sha256:91ab47d071383b5c558542bf54facf116f3fd1516c177ef10843f41e528d8873", size = 141345, upload-time = "2024-10-10T00:57:10.635Z" },
+    { url = "https://files.pythonhosted.org/packages/71/65/87b637539c73bf5b1074eba87389616949e073d91f6c670a4d91e16504de/PyStemmer-2.2.0.3-cp313-cp313-win_amd64.whl", hash = "sha256:4e192613a1e02b0cebcbb9f8a708001bdf7ec842972b42008f3b0b006a8c53b6", size = 185251, upload-time = "2024-10-10T00:57:12.081Z" },
+]
+
+[[package]]
 name = "python-dateutil"
 version = "2.9.0.post0"
 source = { registry = "https://pypi.org/simple" }
@@ -3830,9 +3892,11 @@ dependencies = [
     { name = "llama-index" },
     { name = "llama-index-embeddings-fastembed" },
     { name = "llama-index-embeddings-huggingface" },
+    { name = "llama-index-embeddings-openai-like" },
     { name = "llama-index-embeddings-text-embeddings-inference" },
     { name = "llama-index-llms-huggingface" },
     { name = "llama-index-llms-openai-like" },
+    { name = "llama-index-retrievers-bm25" },
     { name = "llama-index-vector-stores-qdrant" },
     { name = "qdrant-client" },
     { name = "ragas" },
@@ -3872,9 +3936,11 @@ requires-dist = [
     { name = "llama-index", specifier = ">=0.14.16" },
     { name = "llama-index-embeddings-fastembed", specifier = ">=0.5.0" },
     { name = "llama-index-embeddings-huggingface", specifier = ">=0.6.1" },
+    { name = "llama-index-embeddings-openai-like", specifier = ">=0.3.0" },
     { name = "llama-index-embeddings-text-embeddings-inference", specifier = ">=0.5.0" },
     { name = "llama-index-llms-huggingface", specifier = ">=0.6.1" },
     { name = "llama-index-llms-openai-like", specifier = ">=0.7.0" },
+    { name = "llama-index-retrievers-bm25", specifier = ">=0.7.1" },
     { name = "llama-index-vector-stores-qdrant", specifier = ">=0.9.2" },
     { name = "qdrant-client", specifier = ">=1.17.0" },
     { name = "ragas", specifier = ">=0.4.3" },

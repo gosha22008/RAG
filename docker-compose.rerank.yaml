@@ -1,0 +1,63 @@
+services:
+  vllm_embed:
+    image: vllm/vllm-openai:latest
+    container_name: vllm_embed
+    ports:
+      - "8081:8000"
+    volumes:
+      - ./.hf_cache/intfloat/multilingual-e5-large-instruct:/root/.cache/huggingface
+    command: >
+      intfloat/multilingual-e5-large-instruct
+      --served-model-name harr-embed
+      --max-model-len 512
+      --max-num-batched-tokens 8192
+      --max-num-seqs 64
+      --gpu-memory-utilization 0.5
+      --trust-remote-code
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  vllm_rerank:
+      image: vllm/vllm-openai:latest
+      container_name: vllm_rerank
+      ports:
+        - "8082:8000"
+      volumes:
+        - ./.hf_cache/rerank/jinaai:/root/.cache/huggingface
+      # entrypoint: ["vllm", "serve"]
+      command: >
+        jinaai/jina-reranker-v3
+        --served-model-name harr-rerank
+        --max-model-len 4096
+        --max-num-batched-tokens 8192
+        --max-num-seqs 64
+        --gpu-memory-utilization 0.35
+        --trust-remote-code
+      deploy:
+        resources:
+          reservations:
+            devices:
+              - driver: nvidia
+                count: 1
+                capabilities: [gpu]
+
+
+  # tei-rerank:
+  #     image: ghcr.io/huggingface/text-embeddings-inference:cuda-latest
+  #     volumes:
+  #     - ./.hf_cache/rerank/jinaai:/data
+  #     command: --model-id jinaai/jina-reranker-v3 --port 8080
+  #     ports:
+  #       - "8082:8080"
+  #     deploy:
+  #       resources:
+  #         reservations:
+  #           devices:
+  #             - driver: nvidia
+  #               count: 1
+  #               capabilities: [gpu]

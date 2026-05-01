@@ -16,50 +16,6 @@ CHUNK_SIZE = []
 # local_data 
 local_data = Path.cwd() / "data"
 
-# Проверка памяти GPU
-def check_gpu_memory():
-    """Выводит информацию о памяти GPU"""
-    if not torch.cuda.is_available():
-        print("GPU не доступен")
-        return
-
-    allocated = torch.cuda.memory_allocated() / 1024**2
-    reserved = torch.cuda.memory_reserved() / 1024**2
-    total = torch.cuda.get_device_properties(0).total_memory / 1024**2
-
-    print(f"📊 GPU Memory Status:")
-    print(f"   Total: {total:.0f} MB")
-    print(f"   Allocated: {allocated:.1f} MB ({allocated/total*100:.1f}%)")
-    print(f"   Reserved: {reserved:.1f} MB ({reserved/total*100:.1f}%)")
-    print(f"   Free: {total - reserved:.1f} MB")
-
-
-# Очистка памяти перед загрузкой новой модели
-def cleanup_memory():
-    """Полная очистка памяти GPU"""
-    # Удаляем все большие объекты
-    for obj in gc.get_objects():
-        try:
-          if isinstance(obj, torch.Tensor):
-              del obj
-        except:
-          pass
-
-    # Очищаем кэш
-    if torch.cuda.is_available():
-        torch.cuda.empty_cache()
-
-    # Сборщик мусора
-    gc.collect()
-
-    print("✅ Память очищена")
-    check_gpu_memory()
-
-
-def drop_embed_model_from_gpu():
-    Settings.embed_model = None
-    cleanup_memory()
-
 
 def load_data(dir):
     # считываем простым reader'ом файл оферты в формате txt
@@ -97,8 +53,6 @@ def create_collect():
         storage_context=storage_context,
         show_progress=True 
     )
-    # пытаемся удалить embedding модель с GPU
-    drop_embed_model_from_gpu()
 
 
     print("Коллекция успешно создана и проиндексирована")

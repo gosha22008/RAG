@@ -1,0 +1,6 @@
+precision@k,recall@k,f1@k,hit_rate@k,mrr@k,experiment,collection,k,chunk_size,chunk_overlap,splitter_type
+0.7387,0.7387,0.7387,0.7387,0.7387,harr_0.6b_hier_small,wb_harr_0.6b_hier_small,1,500,200,hierarchical
+0.6847,0.8333,0.7342,0.8333,0.786,harr_0.6b_hier_small,wb_harr_0.6b_hier_small,2,500,200,hierarchical
+0.6456,0.8874,0.7212,0.8874,0.8041,harr_0.6b_hier_small,wb_harr_0.6b_hier_small,3,500,200,hierarchical
+0.5667,0.9189,0.672,0.9189,0.8115,harr_0.6b_hier_small,wb_harr_0.6b_hier_small,5,500,200,hierarchical
+0.4459,0.9505,0.5731,0.9505,0.8156,harr_0.6b_hier_small,wb_harr_0.6b_hier_small,10,500,200,hierarchical
