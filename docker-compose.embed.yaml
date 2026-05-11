@@ -5,14 +5,14 @@ services:
     ports:
       - "8081:8000"
     volumes:
-      - ./.hf_cache/embed:/root/.cache/huggingface
+      - ./.hf_cache/BAAI/bge-m3:/root/.cache/huggingface
     command: >
-      Qwen/Qwen3-Embedding-0.6B
+      BAAI/bge-m3
       --served-model-name qwen3-embed
-      --max-model-len 16384
-      --max-num-batched-tokens 16384
+      --max-model-len 8192
+      --max-num-batched-tokens 8192
       --max-num-seqs 64
-      --gpu-memory-utilization 0.35
+      --gpu-memory-utilization 0.3
       --trust-remote-code
     deploy:
       resources:

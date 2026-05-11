@@ -1,6 +1,6 @@
 precision@k,recall@k,f1@k,hit_rate@k,mrr@k,experiment,collection,k,chunk_size,chunk_overlap,splitter_type,retrieval_mode,rerank
-0.8198,0.8198,0.8198,0.8198,0.8198,jina-embeddings-v3-rerank,wb_jina-embeddings-v3-rerank,1,500,200,hierarchical,dense,True
-0.8041,0.8784,0.8288,0.8784,0.8491,jina-embeddings-v3-rerank,wb_jina-embeddings-v3-rerank,2,500,200,hierarchical,dense,True
-0.7417,0.9099,0.7959,0.9099,0.8596,jina-embeddings-v3-rerank,wb_jina-embeddings-v3-rerank,3,500,200,hierarchical,dense,True
-0.6144,0.9369,0.715,0.9369,0.8661,jina-embeddings-v3-rerank,wb_jina-embeddings-v3-rerank,5,500,200,hierarchical,dense,True
-0.4216,0.9414,0.5552,0.9414,0.8669,jina-embeddings-v3-rerank,wb_jina-embeddings-v3-rerank,10,500,200,hierarchical,dense,True
+0.8108,0.8108,0.8108,0.8108,0.8108,jina-embeddings-v3-rerank,wb_jina-embeddings-v3-rerank,1,500,200,hierarchical,dense,True
+0.777,0.8874,0.8138,0.8874,0.8491,jina-embeddings-v3-rerank,wb_jina-embeddings-v3-rerank,2,500,200,hierarchical,dense,True
+0.7312,0.9144,0.7883,0.9144,0.8581,jina-embeddings-v3-rerank,wb_jina-embeddings-v3-rerank,3,500,200,hierarchical,dense,True
+0.618,0.9369,0.7198,0.9369,0.8635,jina-embeddings-v3-rerank,wb_jina-embeddings-v3-rerank,5,500,200,hierarchical,dense,True
+0.4446,0.955,0.578,0.955,0.8661,jina-embeddings-v3-rerank,wb_jina-embeddings-v3-rerank,10,500,200,hierarchical,dense,True

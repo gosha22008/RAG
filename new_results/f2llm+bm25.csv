@@ -1,0 +1,4 @@
+precision@k,recall@k,f1@k,hit_rate@k,mrr@k,experiment,collection,k,chunk_size,chunk_overlap,splitter_type,retrieval_mode,rerank
+0.6967,0.9144,0.7667,0.9144,0.8371,f2llm+bm25,wb_f2llm+bm25,3,500,200,hierarchical,hybrid,False
+0.5937,0.9505,0.7045,0.9505,0.8452,f2llm+bm25,wb_f2llm+bm25,5,500,200,hierarchical,hybrid,False
+0.4505,0.973,0.5922,0.973,0.8477,f2llm+bm25,wb_f2llm+bm25,10,500,200,hierarchical,hybrid,False

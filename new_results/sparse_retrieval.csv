@@ -1,0 +1,4 @@
+precision@k,recall@k,f1@k,hit_rate@k,mrr@k,experiment,collection,k,chunk_size,chunk_overlap,splitter_type,retrieval_mode,rerank
+0.5255,0.8333,0.6252,0.8333,0.7485,sparse_retrieval,wb_sparse_retrieval,3,500,200,token,sparse,False
+0.3982,0.8559,0.5267,0.8559,0.7532,sparse_retrieval,wb_sparse_retrieval,5,500,200,token,sparse,False
+0.2644,0.9054,0.3963,0.9054,0.7605,sparse_retrieval,wb_sparse_retrieval,10,500,200,token,sparse,False

@@ -10,14 +10,18 @@ dependencies = [
     "dotenv>=0.9.9",
     "fastembed>=0.7.4",
     "fastembed-gpu>=0.7.4",
+    "google>=3.0.0",
     "llama-index>=0.14.16",
     "llama-index-embeddings-fastembed>=0.5.0",
     "llama-index-embeddings-huggingface>=0.6.1",
     "llama-index-embeddings-openai-like>=0.3.0",
     "llama-index-embeddings-text-embeddings-inference>=0.5.0",
+    "llama-index-llms-google-genai>=0.9.2",
     "llama-index-llms-huggingface>=0.6.1",
     "llama-index-llms-openai-like>=0.7.0",
     "llama-index-retrievers-bm25>=0.7.1",
+    "llama-index-tools-google>=0.7.1",
+    "llama-index-utils-workflow>=0.10.1",
     "llama-index-vector-stores-qdrant>=0.9.2",
     "qdrant-client>=1.17.0",
     "ragas>=0.4.3",
@@ -26,6 +30,12 @@ dependencies = [
 ]
 
 [dependency-groups]
+api = [
+    "aiogram>=3.28.2",
+    "fastapi>=0.136.1",
+    "httpx>=0.28.1",
+    "uvicorn>=0.46.0",
+]
 dev = [
     "mypy>=1.19.1",
     "pre-commit>=4.5.1",

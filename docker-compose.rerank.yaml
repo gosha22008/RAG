@@ -5,11 +5,11 @@ services:
     ports:
       - "8081:8000"
     volumes:
-      - ./.hf_cache/intfloat/multilingual-e5-large-instruct:/root/.cache/huggingface
+      - ./.hf_cache/BAAI/bge-m3:/root/.cache/huggingface
     command: >
-      intfloat/multilingual-e5-large-instruct
+      BAAI/bge-m3
       --served-model-name harr-embed
-      --max-model-len 512
+      --max-model-len 4096
       --max-num-batched-tokens 8192
       --max-num-seqs 64
       --gpu-memory-utilization 0.5

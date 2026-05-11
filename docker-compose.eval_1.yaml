@@ -3,7 +3,7 @@ services:
     image: vllm/vllm-openai:latest
     container_name: vllm_eval_1
     ports:
-      - "8000:8000"
+      - "8083:8000"
     volumes:
   # Локальная папка для всех весов моделей HuggingFace
       - ./.hf_cache/eval_1:/root/.cache/huggingface
@@ -15,10 +15,10 @@ services:
     command:                                     
       RedHatAI/Meta-Llama-3.1-8B-Instruct-FP8
       --enforce-eager
-      --gpu-memory-utilization 0.87
-      --max-model-len 4096
-      --max-num-batched-tokens 4096
-      --max-num-seqs 32
+      --gpu-memory-utilization 0.8
+      --max-model-len 8192
+      --max-num-batched-tokens 8192
+      --max-num-seqs 64
       --served-model-name qwen3-14b
       --trust-remote-code
     deploy:

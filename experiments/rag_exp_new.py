@@ -68,6 +68,17 @@ from llama_index.vector_stores.qdrant import QdrantVectorStore
 from llama_index.retrievers.bm25 import BM25Retriever
 from qdrant_client import QdrantClient
 from transformers import AutoTokenizer
+from datasets import Dataset
+from ragas import evaluate, EvaluationDataset
+from ragas.llms import LlamaIndexLLMWrapper
+from ragas.embeddings import LlamaIndexEmbeddingsWrapper
+from ragas import evaluate, EvaluationDataset
+from ragas.metrics import (Faithfulness, ResponseRelevancy, 
+    LLMContextPrecisionWithoutReference, LLMContextRecall)
+from llama_index.llms.openai_like import OpenAILike
+import os
+from dotenv import load_dotenv
+
 
 logging.basicConfig(level=logging.INFO,
                     format="%(asctime)s - %(levelname)s - %(message)s")
@@ -75,9 +86,36 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 logger = logging.getLogger("rag")
 
 
-# ═══════════════════════════════════════════════════════════════════
-# 1. КОНФИГИ
-# ═══════════════════════════════════════════════════════════════════
+# ====================================================================
+
+@dataclass
+class LLMConfig:
+    """Параметры LLM для генерации."""
+    api_base: str = "http://localhost:8083/v1"
+    api_model_name: str = "harr-llm"
+    api_key= ""
+    temperature: float = 0.0
+    max_tokens: int = 1024
+    system_prompt: str = (
+        "Ты — помощник, отвечающий на вопросы строго по предоставленному контексту. "
+        "Если в контексте нет ответа — скажи, что информации недостаточно. "
+        "Не выдумывай факты."
+    )
+    user_template: str = (
+        "Контекст:\n{context}\n\n"
+        "Вопрос: {query}\n\n"
+        "Ответ:"
+    )
+
+load_dotenv()
+@dataclass
+class JudgeConfig:
+    """Параметры LLM-судьи для evaluation."""
+    api_base: str = "https://api.groq.com/openai/v1"  # api для отладки
+    api_model_name: str = "gemini-2.5-flash"
+    api_key = os.getenv("GEMINI_API_KEY") 
+    temperature: float = 0.0
+
 
 @dataclass
 class ChunkingConfig:
@@ -115,6 +153,7 @@ class EmbeddingConfig:
 
 @dataclass
 class RerankConfig:
+    """Параметры реранкера."""
     enabled: bool = False
     model_name: str = "Qwen/Qwen3-Reranker-0.6B"
     top_n: int = 5
@@ -131,6 +170,8 @@ class RetrievalConfig:
     mode: str = "dense"  # dense | sparse | hybrid
     retrieval_k: int = 15  # сколько кандидатов достать ДО реранкинга
     top_k_values: List[int] = field(default_factory=lambda: [1, 2, 3, 5, 10])
+    retriever_weights: List[float] = field(default_factory=lambda: [0.5, 0.5])
+    retrievers_mode: str = "reciprocal_rerank"
 
 
 @dataclass
@@ -149,9 +190,7 @@ class RAGConfig:
         return f"wb_{self.name}"
 
 
-# ═══════════════════════════════════════════════════════════════════
-# 2. ЗАГРУЗКА ДОКУМЕНТОВ И ВОПРОСОВ
-# ═══════════════════════════════════════════════════════════════════
+# ====================================================================
 
 def load_and_prepare_docs(data_dir: str) -> List[Document]:
     """Загружает PDF из директории, нумерует страницы, удаляет пустые."""
@@ -243,9 +282,7 @@ class EvalDataLoader:
         return data
 
 
-# ═══════════════════════════════════════════════════════════════════
-# 3. EMBEDDING (через OpenAI-like API)
-# ═══════════════════════════════════════════════════════════════════
+# ====================================================================
 
 def setup_embedding(cfg: EmbeddingConfig) -> None:
     """Устанавливает Settings.embed_model. Безопасно при повторных вызовах:
@@ -269,9 +306,7 @@ def setup_embedding(cfg: EmbeddingConfig) -> None:
     logger.info(f"Embedding: {cfg.model_name} @ {cfg.api_base}{suffix}")
 
 
-# ═══════════════════════════════════════════════════════════════════
-# 4. ЧАНКИНГ
-# ═══════════════════════════════════════════════════════════════════
+# ====================================================================
 
 class SplitterFactory:
     """Создаёт сплиттеры по конфигу. Тип задаётся через ChunkingConfig.splitter_type."""
@@ -308,9 +343,7 @@ class SplitterFactory:
         raise ValueError(f"Неизвестный splitter_type: {t}")
 
 
-# ═══════════════════════════════════════════════════════════════════
-# 5. ИНДЕКСАЦИЯ
-# ═══════════════════════════════════════════════════════════════════
+# ====================================================================
 
 def build_index(client: QdrantClient,
                 collection_name: str,
@@ -340,9 +373,7 @@ def build_index(client: QdrantClient,
     return VectorStoreIndex.from_vector_store(vector_store=vs)
 
 
-# ═══════════════════════════════════════════════════════════════════
-# 6. РЕТРИВЕРЫ (dense / sparse / hybrid)
-# ═══════════════════════════════════════════════════════════════════
+# ====================================================================
 
 def build_retriever(index: VectorStoreIndex,
                     retrieval_cfg: RetrievalConfig,
@@ -355,6 +386,8 @@ def build_retriever(index: VectorStoreIndex,
     """
     mode = retrieval_cfg.mode
     k = retrieval_cfg.retrieval_k
+    w = retrieval_cfg.retriever_weights
+    r_m = retrieval_cfg.retrievers_mode
 
     if mode == "dense":
         return index.as_retriever(similarity_top_k=k)
@@ -371,16 +404,16 @@ def build_retriever(index: VectorStoreIndex,
             retrievers=[dense, sparse],
             similarity_top_k=k,
             num_queries=1,           # без расширения запроса
-            mode="reciprocal_rerank",
+            mode=r_m,
             use_async=False,
+            retriever_weights=w
         )
 
     raise ValueError(f"Неизвестный retrieval mode: {mode}")
 
 
-# ═══════════════════════════════════════════════════════════════════
-# 7. РЕРАНКЕР (локальный через CrossEncoder ИЛИ через HTTP API)
-# ═══════════════════════════════════════════════════════════════════
+# ====================================================================
+
 class JinaV3Reranker:
     """Реранкер через jinaai/jina-reranker-v3 (listwise, локально).
     
@@ -672,9 +705,7 @@ def build_reranker(cfg: RerankConfig):
 #         )
 
 
-# # ═══════════════════════════════════════════════════════════════════
-# # 7. РЕРАНКЕР (через HTTP API: vLLM или TEI)
-# # ═══════════════════════════════════════════════════════════════════
+# ========================================================
 
 # class HTTPReranker:
 #     """Реранкер через HTTP API. Поддерживает два формата:
@@ -805,9 +836,7 @@ def build_reranker(cfg: RerankConfig):
 #     )
 
 
-# ═══════════════════════════════════════════════════════════════════
-# 8. МЕТРИКИ (без изменений из rag_exp.py)
-# ═══════════════════════════════════════════════════════════════════
+# ====================================================================
 
 class RetrievalMetrics:
     """Метрики качества retrieval по покрытию страниц."""
@@ -837,9 +866,7 @@ class RetrievalMetrics:
         return pd.DataFrame(ms).mean().round(4)
 
 
-# ═══════════════════════════════════════════════════════════════════
-# 9. ЗАПУСК ЭКСПЕРИМЕНТОВ
-# ═══════════════════════════════════════════════════════════════════
+# ====================================================================
 
 def _index_documents(cfg: RAGConfig,
                      page_mapper: PageMapper,
@@ -961,9 +988,7 @@ def run_experiments(configs: List[RAGConfig],
     return result
 
 
-# ═══════════════════════════════════════════════════════════════════
-# 10. ВИЗУАЛИЗАЦИЯ
-# ═══════════════════════════════════════════════════════════════════
+# ====================================================================
 
 class ResultsVisualizer:
     """Графики результатов экспериментов."""
@@ -1053,7 +1078,12 @@ class ResultsVisualizer:
                     fontsize=11, fontweight="bold",
                 )
                 ax.set_xlabel("")
-                ax.tick_params(axis="x", rotation=35, labelsize=8)
+                # ax.tick_params(axis="x", rotation=35, labelsize=8)
+                if ri == len(M) - 1:
+                    ax.tick_params(axis="x", rotation=90, labelsize=8)
+                else:
+                    ax.set_xticklabels([])
+                    ax.tick_params(axis="x", bottom=False)
 
                 leg = ax.get_legend()
                 if leg:
@@ -1069,3 +1099,137 @@ class ResultsVisualizer:
             plt.savefig(save_path, dpi=300, bbox_inches="tight")
             logger.info(f"График: {save_path}")
         plt.show()
+
+
+# ====================================================================
+
+class LLMGenerator:
+    """Генерирует ответы через OpenAI-compatible API (vLLM)."""
+
+    def __init__(self, cfg: LLMConfig):
+        from openai import OpenAI
+        self.cfg = cfg
+        self.client = OpenAI(api_key="dummy", base_url=cfg.api_base)
+        logger.info(f"LLM: {cfg.api_model_name} @ {cfg.api_base}")
+
+    def generate(self, query: str, contexts: list) -> str:
+        """Генерирует ответ на вопрос с учётом контекста."""
+        context_str = "\n\n---\n\n".join(contexts)
+        user_msg = self.cfg.user_template.format(context=context_str, query=query)
+
+        response = self.client.chat.completions.create(
+            model=self.cfg.api_model_name,
+            messages=[
+                {"role": "system", "content": self.cfg.system_prompt},
+                {"role": "user", "content": user_msg},
+            ],
+            temperature=self.cfg.temperature,
+            max_tokens=self.cfg.max_tokens,
+        )
+        return response.choices[0].message.content
+
+
+def run_generation(cfg: RAGConfig, llm_cfg: LLMConfig,
+                   page_mapper, splitter_factory, eval_data,
+                   client, sample_size: int = None) -> pd.DataFrame:
+    """Прогоняет full pipeline: retrieval → rerank → generation.
+    Возвращает DataFrame с колонками: query, contexts, answer, relevant_pages.
+    """
+    # 1. Индексация и retrieval setup
+    index, nodes = _index_documents(cfg, page_mapper, splitter_factory, client)
+    retriever = build_retriever(index, cfg.retrieval, nodes=nodes)
+    reranker = build_reranker(cfg.rerank)
+    llm = LLMGenerator(llm_cfg)
+
+    # 2. Прогон по eval_data (или подвыборке для скорости)
+    data = eval_data[:sample_size] if sample_size else eval_data
+
+    records = []
+    for item in tqdm(data, desc=f"Generate [{cfg.name}]"):
+        # Retrieval + rerank
+        candidates = retriever.retrieve(item["query"])
+        if reranker is not None:
+            candidates = reranker.rerank(item["query"], candidates)
+
+        contexts = [n.get_content() for n in candidates[:cfg.retrieval.top_k_values[0]]]
+
+        # Generation
+        try:
+            answer = llm.generate(item["query"], contexts)
+        except Exception as e:
+            logger.warning(f"LLM failed: {e}")
+            answer = ""
+
+        records.append({
+            "query": item["query"],
+            "relevant_pages": item["relevant_pages"],
+            "contexts": contexts,
+            "answer": answer,
+        })
+
+    df = pd.DataFrame(records)
+    return df
+
+
+# ====================================================================
+
+def evaluate_with_ragas(df_gen: pd.DataFrame,
+                       judge_cfg: JudgeConfig,
+                       embedding_cfg: EmbeddingConfig,
+                       has_ground_truth: bool = False) -> pd.DataFrame:
+    """Оценивает RAG через Ragas с независимой LLM-судьёй."""
+
+    # Подключаем судью в зависимости от провайдера
+    if "gemini" in judge_cfg.api_model_name.lower():
+        from llama_index.llms.google_genai import GoogleGenAI
+        import os
+        from dotenv import load_dotenv
+        load_dotenv()
+        judge_llm = LlamaIndexLLMWrapper(GoogleGenAI(
+            model=judge_cfg.api_model_name,
+            api_key=os.getenv("GOOGLE_API_KEY"),
+            temperature=judge_cfg.temperature,
+    ))
+    else:
+        # OpenAI-compatible (включая локальный vLLM с другой моделью)
+
+        judge_llm = LlamaIndexLLMWrapper(OpenAILike(
+            model=judge_cfg.api_model_name,
+            api_base=judge_cfg.api_base,
+            api_key=judge_cfg.api_key or "dummy",
+            temperature=judge_cfg.temperature,
+            is_chat_model=True,
+            additional_kwargs={"n": 1}
+        ))
+
+    # Embedding для answer_relevancy — можно оставить локальный
+    judge_embeddings = LlamaIndexEmbeddingsWrapper(OpenAILikeEmbedding(
+        model_name=embedding_cfg.api_model_name,  
+        api_base=embedding_cfg.api_base,           
+        api_key="dummy",
+    ))
+
+    # Готовим данные
+    samples = []
+    for _, row in df_gen.iterrows():
+        sample = {
+            "user_input": row["query"],
+            "retrieved_contexts": row["contexts"],
+            "response": row["answer"],
+        }
+        if has_ground_truth and "ground_truth" in row:
+            sample["reference"] = row["ground_truth"]
+        samples.append(sample)
+
+    eval_dataset = EvaluationDataset.from_list(samples)
+
+    metrics = [
+        Faithfulness(llm=judge_llm),
+        ResponseRelevancy(llm=judge_llm, embeddings=judge_embeddings),
+        LLMContextPrecisionWithoutReference(llm=judge_llm),
+    ]
+    if has_ground_truth:
+        metrics.append(LLMContextRecall(llm=judge_llm))
+
+    result = evaluate(dataset=eval_dataset, metrics=metrics, show_progress=True)
+    return result.to_pandas()
