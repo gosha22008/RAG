@@ -94,7 +94,7 @@ class LLMConfig:
     api_base: str = "http://localhost:8083/v1"
     api_model_name: str = "harr-llm"
     api_key= ""
-    temperature: float = 0.0
+    temperature: float = 0.1
     max_tokens: int = 1024
     system_prompt: str = (
         "Ты — помощник, отвечающий на вопросы строго по предоставленному контексту. "
@@ -136,20 +136,6 @@ class EmbeddingConfig:
     params: Optional[dict] = None
     truncate_dim: Optional[int] = None  # Matryoshka: обрезать до N размерностей
 
-
-# @dataclass
-# class RerankConfig:
-#     """Параметры реранкера через HTTP API.
-
-#     backend = "vllm" — формат Cohere-style (POST {api_base}/v1/rerank)
-#     backend = "tei"  — формат TEI         (POST {api_base}/rerank)
-#     """
-#     enabled: bool = False
-#     model_name: str = "Qwen/Qwen3-Reranker-0.6B"
-#     api_base: str = "http://localhost:8082"
-#     api_model_name: str = "qwen3-rerank"
-#     top_n: int = 5
-#     backend: str = "vllm"  # vllm | tei
 
 @dataclass
 class RerankConfig:
@@ -974,6 +960,9 @@ class LLMGenerator:
             ],
             temperature=self.cfg.temperature,
             max_tokens=self.cfg.max_tokens,
+            extra_body={
+            "chat_template_kwargs": {"enable_thinking": False}
+            },
         )
         return response.choices[0].message.content
 

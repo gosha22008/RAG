@@ -1,0 +1,22 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# 1. Устанавливаем системные зависимости (если нужны для компиляции пакетов)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# 2. Устанавливаем uv (быстрый менеджер пакетов на Rust)
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
+
+# 3. Копируем файл зависимостей
+COPY requirements-api.txt .
+
+# 4. Устанавливаем зависимости через uv
+# --system: устанавливаем в системный Python (так как мы в slim-образе без venv)
+# --no-cache: не сохраняем кэш внутри образа (экономим место, так как образ одноразовый или слой не переиспользуется часто при смене reqs)
+RUN uv pip install --system --no-cache -r requirements-api.txt
+
+# 5. CMD переопределяется в docker-compose, но оставим заглушку
+CMD ["python", "-c", "print('override via compose command')"]

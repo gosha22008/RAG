@@ -8,7 +8,6 @@ services:
       - "6333:6333"
       - "6334:6334"
     volumes:
-      # Локальная папка для базы данных Qdrant
       - ./.qdrant_data:/qdrant/storage
     restart: unless-stopped
 
@@ -44,19 +43,14 @@ services:
       - "8000:8000"
     volumes:
       - ./.hf_cache:/root/.cache/huggingface
-    # environment:
-      # - CUDA_LAUNCH_BLOCKING=1 
-      # - NVIDIA_VISIBLE_DEVICES=all
-      # - HF_HUB_ENABLE_HF_TRANSFER=1
     command: >
-      Qwen/Qwen3-4B-Instruct-2507-FP8
-      --quantization fp8
+      Qwen/Qwen3-8B-AWQ
+      --quantization awq_marlin
       --enforce-eager
-      --gpu-memory-utilization 0.55
-      --max-model-len 16384
-      --max-num-batched-tokens 16384
+      --gpu-memory-utilization 0.65
+      --max-model-len 8192
+      --max-num-batched-tokens 8192
       --max-num-seqs 32
-      --kv-cache-dtype fp8
       --served-model-name qwen3-4b
       --trust-remote-code
     deploy:
@@ -91,8 +85,44 @@ services:
     restart: unless-stopped
 
 
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: api
+    network_mode: host
+    working_dir: /app
+    volumes:
+      - ./:/app
+    env_file:
+      - .env
+    command: uvicorn api.server:app --host 0.0.0.0 --port 10000
+    depends_on:
+      - qdrant
+      - vllm
+      - vllm_embed
+      - tei-rerank
+    restart: unless-stopped
 
-      # tei:
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: bot
+    network_mode: host
+    working_dir: /app
+    volumes:
+      - ./:/app
+    env_file:
+      - .env
+    command: python -u api/bot.py
+    depends_on:
+      - api
+    restart: unless-stopped
+
+
+# для запуска на cpu
+          # tei:
   #   image: ghcr.io/huggingface/text-embeddings-inference:cpu-ipex-latest
   #   container_name: tei
   #   ports:
