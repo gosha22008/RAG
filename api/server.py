@@ -1,6 +1,3 @@
-"""FastAPI с RAG-пайплайном.
-Запуск: uvicorn api.server:app --host 0.0.0.0 --port 10000
-"""
 import logging
 import os
 import sys
@@ -12,15 +9,14 @@ from qdrant_client import QdrantClient
 from llama_index.core import Settings
 from llama_index.embeddings.openai_like import OpenAILikeEmbedding
 
-# Подключаем код проекта
 sys.path.append(str(Path(__file__).parent.parent))
 from experiments.rag_exp_new import (
     RAGConfig, ChunkingConfig, EmbeddingConfig, RetrievalConfig, RerankConfig,
     LLMConfig, _index_documents, build_retriever, build_reranker, LLMGenerator,
     load_and_prepare_docs, PageMapper, EvalDataLoader, SplitterFactory
 )
-# Подгружай свои функции для page_mapper и splitter_factory
-# from experiments.utils import page_mapper, splitter_factory  # как у тебя называется
+
+# from experiments.utils import page_mapper, splitter_factory 
 docs = load_and_prepare_docs("./data")
 page_mapper = PageMapper(docs)
 # eval_data = EvalDataLoader.load("./context/docs_questions_qwen3_14b_awq.jsonl",
@@ -31,7 +27,6 @@ splitter_factory = SplitterFactory("BAAI/bge-m3")
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# === Конфигурация ===
 Settings.llm = None
 Settings.embed_model = OpenAILikeEmbedding(
     model_name="qwen3-embed",
@@ -47,7 +42,7 @@ cfg_rag = RAGConfig(
         enabled=True,
         model_name="BAAI/bge-reranker-v2-m3",
         backend="tei",
-        top_n=5,
+        top_n=10,
     ),
     recreate=False,
 )
@@ -58,7 +53,7 @@ llm_cfg = LLMConfig(
     max_tokens=1024,
 )
 
-# === Глобальные объекты пайплайна (ленивая инициализация) ===
+
 class Pipeline:
     def __init__(self):
         self.retriever = None
@@ -68,7 +63,6 @@ class Pipeline:
     def init(self):
         logger.info("Инициализация RAG пайплайна...")
         client = QdrantClient(prefer_grpc=True)
-        # ВАЖНО: подставь свои page_mapper и splitter_factory
         index, nodes = _index_documents(cfg_rag, page_mapper, splitter_factory, client)
         self.retriever = build_retriever(index, cfg_rag.retrieval, nodes=nodes)
         self.reranker = build_reranker(cfg_rag.rerank)
@@ -80,7 +74,7 @@ class Pipeline:
         candidates = self.retriever.retrieve(query)
         if self.reranker is not None:
             candidates = self.reranker.rerank(query, candidates)
-        contexts = [n.get_content() for n in candidates[:5]]
+        contexts = [n.get_content() for n in candidates[:10]]
         pages = [n.metadata.get("pages_covered", []) for n in candidates[:5]]
         answer = self.llm.generate(query, contexts)
         return {

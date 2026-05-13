@@ -67,7 +67,7 @@ async def handle_question(message: Message):
 
         text = (
             f"💡 *Ответ:*\n{answer}\n\n"
-            f"📄 *Страницы документа:* {pages_str}"
+            # f"📄 *Страницы документа:* {pages_str}"
         )
 
         await thinking_msg.edit_text(text, parse_mode="Markdown")

@@ -44,13 +44,13 @@ services:
     volumes:
       - ./.hf_cache:/root/.cache/huggingface
     command: >
-      Qwen/Qwen3-8B-AWQ
-      --quantization awq_marlin
+      Qwen/Qwen3-4B-Instruct-2507-FP8
+      --quantization fp8
       --enforce-eager
-      --gpu-memory-utilization 0.65
-      --max-model-len 8192
-      --max-num-batched-tokens 8192
-      --max-num-seqs 32
+      --gpu-memory-utilization 0.6
+      --max-model-len 16384
+      --max-num-batched-tokens 16384
+      --max-num-seqs 64
       --served-model-name qwen3-4b
       --trust-remote-code
     deploy:
@@ -60,7 +60,7 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    # restart: unless-stopped
+    restart: unless-stopped
 
 
   tei-rerank:
