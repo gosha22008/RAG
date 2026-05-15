@@ -3,6 +3,11 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+# Мои игноры
+.*
+NLP2*
+
+
 # C extensions
 *.so
 
