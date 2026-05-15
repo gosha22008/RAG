@@ -37,7 +37,6 @@
    - requirements-api.txt
    - rag_exp_new.ipynb — основной ноутбук экспериментов
    - create_test_set.ipynb — генерация бенчмарка (показывает методику создания тестов)
-   - ragas_eval.py — оценка генерации
 
 Стек технологий
   -  Python 3.12
